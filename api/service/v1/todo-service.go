@@ -92,6 +92,10 @@ func (s *ToDoServiceServer) Read(ctx context.Context,req *v1.ReadRequest) (*v1.R
 	if err:=rows.Scan(&td.Id,&td.Title,&td.Description,&reminder);err!=nil{
 		return nil,status.Error(codes.Unknown,"查找数据失败:"+err.Error())
 	}
+	td.Reminder,err = ptypes.TimestampProto(reminder)
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "reminder 格式无效-> "+err.Error())
+	}
 	if rows.Next(){
 		return nil,status.Error(codes.Unknown,fmt.Sprintf("查找到多条数据ID='%d'",req.Id))
 	}
@@ -140,7 +144,7 @@ func (s *ToDoServiceServer) Delete(ctx context.Context,req *v1.DeleteRequest) (*
 		return nil,err
 	}
 	defer c.Close()
-	res,err:=c.ExecContext(ctx,"DELETE FROM ToDo where 'ID'=?",req.Id)
+	res,err:=c.ExecContext(ctx,"DELETE FROM ToDo where `ID`=?",req.Id)
 	if err!=nil{
 		return nil,status.Error(codes.Unknown,"删除失败:"+err.Error())
 	}

@@ -19,14 +19,15 @@ type Config struct {
 	DataStoreDBSchema string
 }
 var cfg Config
-func init()  {
+
+func init() {
 	cfg=Config{}
 	flag.StringVar(&cfg.GRPCPort,"port",conf.Port,"gRPC port to bind")
 	flag.StringVar(&cfg.DataStoreDBHost,"db-host",conf.DbHost,"db host")
 	flag.StringVar(&cfg.DataStoreDBUser,"db-user",conf.DbUser,"db-user")
 	flag.StringVar(&cfg.DataStoreDBPassword,"db-password",conf.DbPassword,"db-password")
 	flag.StringVar(&cfg.DataStoreDBSchema,"db-schema",conf.DbSchema,"db-schema")
-	fmt.Println("init"+cfg.GRPCPort)
+	fmt.Println("init:"+cfg.GRPCPort)
 	flag.Parse()
 }
 
