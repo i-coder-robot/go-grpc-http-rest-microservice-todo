@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	v1 "github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/api/proto/v1"
+	"github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/logger"
+	"github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/pkg/protocol/rest/middleware"
 	"google.golang.org/grpc"
 	"log"
 	"net/http"
@@ -23,7 +25,8 @@ func RunServer(ctx context.Context, grpcPort, httpPort string) error {
 	}
 	srv := &http.Server{
 		Addr:    ":" + httpPort,
-		Handler: mux,
+		Handler: middleware.AddRequestID(
+			middleware.AddLogger(logger.Log,mux)),
 	}
 
 	c := make(chan os.Signal, 1)
