@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	v1 "github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/api/proto/v1"
+	"google.golang.org/grpc"
 	"log"
 	"net"
-	"google.golang.org/grpc"
 	"os"
 )
 

@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	v1 "github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/api/service/v1"
 	"github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/conf"
+	"github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/pkg/protocol/rest"
 	"github.com/i-coder-robot/go-grpc-http-rest-microservice-todo/server"
 )
 
@@ -38,7 +39,8 @@ func RunServer() error {
 		return fmt.Errorf("invalid TCP port for gRPC server：%s",cfg.GRPCPort)
 	}
 	param:="parseTime=true"
-	dsn :=fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", cfg.DataStoreDBUser, cfg.DataStoreDBPassword, cfg.DataStoreDBHost, cfg.DataStoreDBSchema, param)
+	dsn :=fmt.Sprintf("%s:%s@tcp(%s)/%s?%s",
+		cfg.DataStoreDBUser, cfg.DataStoreDBPassword, cfg.DataStoreDBHost, cfg.DataStoreDBSchema, param)
 	db,err:=sql.Open("mysql",dsn)
 	if err!=nil{
 		return fmt.Errorf("连接数据失败:%v",err)
@@ -46,5 +48,10 @@ func RunServer() error {
 	defer db.Close()
 
 	v1API:= v1.NewToDoServiceServer(db)
+
+	go func() {
+		_ = rest.RunServer(ctx, cfg.GRPCPort, conf.HttpPort)
+	}()
+
 	return server.RunServer(ctx,v1API,cfg.GRPCPort)
 }
